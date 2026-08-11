@@ -5,9 +5,12 @@ import com.AutoFacApi.services.SeleniumService;
 import com.AutoFacApi.services.iDataService.iDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/data")
@@ -36,7 +39,7 @@ public class DataController {
     }
 
     @PostMapping("/capturar")
-    public String capturar() throws Exception {
+    public ResponseEntity<Map<String, Object>> capturar() throws Exception {
 
         Data data = seleniumService.capturarFactura();
 
@@ -44,7 +47,11 @@ public class DataController {
 
         excelService.guardar(data);
 
-        return "Factura guardada correctamente";
+        Map<String, Object> response = new HashMap<>();
+        response.put("mensaje","Factura guardada correctamente");
+        response.put("success", true);
+
+        return ResponseEntity.ok(response);
     }
 
 

@@ -39,6 +39,8 @@ public class ExcelService {
             header.createCell(5).setCellValue("Total");
             header.createCell(6).setCellValue("Forma Pago");
             header.createCell(7).setCellValue("Medio Pago");
+            header.createCell(8).setCellValue("Ultimo proceso");
+            header.createCell(9).setCellValue("Maximo valor facturado ");
 
 
 
