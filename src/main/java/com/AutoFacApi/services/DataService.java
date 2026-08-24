@@ -1,7 +1,8 @@
 package com.AutoFacApi.services;
 import com.AutoFacApi.entity.Data;
 import com.AutoFacApi.repository.iDataRepository;
-import com.AutoFacApi.services.iDataService.iDataService;
+import com.AutoFacApi.services.iService.iDataService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;

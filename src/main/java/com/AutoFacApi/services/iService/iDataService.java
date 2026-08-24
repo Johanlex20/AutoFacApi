@@ -1,4 +1,4 @@
-package com.AutoFacApi.services.iDataService;
+package com.AutoFacApi.services.iService;
 import com.AutoFacApi.entity.Data;
 import java.util.List;
 
