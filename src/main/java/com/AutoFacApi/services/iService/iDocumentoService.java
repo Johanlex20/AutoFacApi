@@ -9,4 +9,6 @@ public interface iDocumentoService {
   List<Documento> findAll();
     Documento findById(Long id);
     Documento guardar(MultipartFile archivo) throws IOException;
+    void eliminar(Long id) throws IOException;
+    Documento actualizar(Long id, String nombreOriginal, MultipartFile archivo) throws IOException;
 }

@@ -59,4 +59,60 @@ public class DocumentoService implements iDocumentoService{
 
         return idocumentoRepository.save(documento);
     }
+
+    @Override
+    public void eliminar(Long id) throws IOException {
+      Documento documento = idocumentoRepository.findById(id).orElse(null);
+      if (documento == null) {
+          return;
+      }
+
+      Path archivo = Paths.get(uploadDir).resolve(documento.getNombreArchivo());
+      Files.deleteIfExists(archivo);
+
+      idocumentoRepository.deleteById(id);
+    }
+
+    @Override
+    public Documento actualizar(Long id, String nombreOriginal, MultipartFile archivo) throws IOException {
+      
+      Documento documento = idocumentoRepository.findById(id).orElse(null);
+        if (documento == null) {
+            return null;
+        }
+
+        if (archivo != null && !archivo.isEmpty()) {
+            Path carpeta = Paths.get(uploadDir);
+            Files.createDirectories(carpeta);
+
+            Path archivoViejo = carpeta.resolve(documento.getNombreArchivo());
+            Files.deleteIfExists(archivoViejo);
+
+            String nombreOriginalArchivo = archivo.getOriginalFilename();
+            String extension = "";
+            if (nombreOriginalArchivo != null && nombreOriginalArchivo.contains(".")) {
+                extension = nombreOriginalArchivo.substring(nombreOriginalArchivo.lastIndexOf("."));
+            }
+            String nuevoNombreArchivo = UUID.randomUUID() + extension;
+
+            Files.copy(archivo.getInputStream(), carpeta.resolve(nuevoNombreArchivo));
+
+            documento.setNombreArchivo(nuevoNombreArchivo);
+            documento.setTamanoBytes(archivo.getSize());
+            documento.setContentType(archivo.getContentType());
+            documento.setFechaSubida(LocalDateTime.now());
+
+            if (nombreOriginal == null || nombreOriginal.isBlank()) {
+                documento.setNombreOriginal(nombreOriginalArchivo);
+            }
+        }
+
+        if (nombreOriginal != null && !nombreOriginal.isBlank()) {
+            documento.setNombreOriginal(nombreOriginal);
+        }
+
+        return idocumentoRepository.save(documento);
+    }
+
+    
 }

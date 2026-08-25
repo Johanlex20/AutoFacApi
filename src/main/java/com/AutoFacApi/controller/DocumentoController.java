@@ -59,4 +59,19 @@ public class DocumentoController {
                 .body(recurso);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void eliminar(@PathVariable Long id) throws IOException {
+        documentoService.eliminar(id);
+    }
+
+    @PutMapping("/{id}")
+    public Documento actualizar(
+            @PathVariable Long id,
+            @RequestParam(required = false) String nombreOriginal,
+            @RequestParam(required = false) MultipartFile archivo) throws IOException {
+        return documentoService.actualizar(id, nombreOriginal, archivo);
+    }
+
+
 }
