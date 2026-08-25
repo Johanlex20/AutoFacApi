@@ -14,7 +14,9 @@ public class ConfigurationWeb {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins(
-                                "http://localhost:4200")
+                           "http://localhost:4200",
+                           "https://autofac.modoblu.com"
+                        )
                         .allowedMethods("*")
                         .exposedHeaders("*")
                         .allowCredentials(true);
