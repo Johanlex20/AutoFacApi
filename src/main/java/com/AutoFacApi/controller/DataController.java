@@ -52,13 +52,6 @@ public class DataController {
         dataService.eliminar(id);
     }
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Map<String, String>> manejarDuplicado(IllegalStateException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("mensaje", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-    }
-
     @PostMapping("/capturar")
     public ResponseEntity<Map<String, Object>> capturar() throws Exception {
 

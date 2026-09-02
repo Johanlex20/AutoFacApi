@@ -1,5 +1,6 @@
 package com.AutoFacApi.services;
 import com.AutoFacApi.entity.Data;
+import com.AutoFacApi.exception.RecursoNoEncontradoException;
 import com.AutoFacApi.repository.iDataRepository;
 import com.AutoFacApi.services.iService.iDataService;
 
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import java.util.NoSuchElementException;
 
 @Service
 public class DataService implements iDataService {
@@ -33,7 +33,7 @@ public class DataService implements iDataService {
     @Override
     public Data actualizar(Long id, Data data) {
         Data existente = idataRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Registro no encontrado: " + id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Registro no encontrado: " + id));
 
         boolean duplicado = idataRepository.findAllByNumeroFactura(data.getNumeroFactura())
                 .stream()
