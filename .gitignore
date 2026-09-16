@@ -34,3 +34,6 @@ build/
 .claude/
 .agents/
 PLAN-TRABAJO.md
+
+# Perfil de Chrome persistente de Selenium (sesion/cookies reales de Siigo, nunca debe subirse)
+/chrome-profile-siigo/

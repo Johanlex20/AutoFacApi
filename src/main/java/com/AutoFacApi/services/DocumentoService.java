@@ -16,10 +16,12 @@ import com.AutoFacApi.entity.Documento;
 import com.AutoFacApi.repository.iDocumentoRepository;
 import com.AutoFacApi.services.iService.iDocumentoService;
 
+import net.coobird.thumbnailator.Thumbnails;
+
 
 @Service
 public class DocumentoService implements iDocumentoService{
-  
+
   @Autowired
     private iDocumentoRepository idocumentoRepository;
 
@@ -41,20 +43,13 @@ public class DocumentoService implements iDocumentoService{
         Path carpeta = Paths.get(uploadDir);
         Files.createDirectories(carpeta);
 
-        String nombreOriginal = archivo.getOriginalFilename();
-        String extension = "";
-        if (nombreOriginal != null && nombreOriginal.contains(".")) {
-            extension = nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
-        }
-        String nombreArchivo = UUID.randomUUID() + extension;
-
-        Files.copy(archivo.getInputStream(), carpeta.resolve(nombreArchivo));
+        ArchivoGuardado guardado = guardarArchivo(archivo, carpeta);
 
         Documento documento = new Documento();
-        documento.setNombreOriginal(nombreOriginal);
-        documento.setNombreArchivo(nombreArchivo);
-        documento.setTamanoBytes(archivo.getSize());
-        documento.setContentType(archivo.getContentType());
+        documento.setNombreOriginal(archivo.getOriginalFilename());
+        documento.setNombreArchivo(guardado.nombreArchivo());
+        documento.setTamanoBytes(guardado.tamanoBytes());
+        documento.setContentType(guardado.contentType());
         documento.setFechaSubida(LocalDateTime.now());
 
         return idocumentoRepository.save(documento);
@@ -75,7 +70,7 @@ public class DocumentoService implements iDocumentoService{
 
     @Override
     public Documento actualizar(Long id, String nombreOriginal, MultipartFile archivo) throws IOException {
-      
+
       Documento documento = idocumentoRepository.findById(id).orElse(null);
         if (documento == null) {
             return null;
@@ -88,22 +83,15 @@ public class DocumentoService implements iDocumentoService{
             Path archivoViejo = carpeta.resolve(documento.getNombreArchivo());
             Files.deleteIfExists(archivoViejo);
 
-            String nombreOriginalArchivo = archivo.getOriginalFilename();
-            String extension = "";
-            if (nombreOriginalArchivo != null && nombreOriginalArchivo.contains(".")) {
-                extension = nombreOriginalArchivo.substring(nombreOriginalArchivo.lastIndexOf("."));
-            }
-            String nuevoNombreArchivo = UUID.randomUUID() + extension;
+            ArchivoGuardado guardado = guardarArchivo(archivo, carpeta);
 
-            Files.copy(archivo.getInputStream(), carpeta.resolve(nuevoNombreArchivo));
-
-            documento.setNombreArchivo(nuevoNombreArchivo);
-            documento.setTamanoBytes(archivo.getSize());
-            documento.setContentType(archivo.getContentType());
+            documento.setNombreArchivo(guardado.nombreArchivo());
+            documento.setTamanoBytes(guardado.tamanoBytes());
+            documento.setContentType(guardado.contentType());
             documento.setFechaSubida(LocalDateTime.now());
 
             if (nombreOriginal == null || nombreOriginal.isBlank()) {
-                documento.setNombreOriginal(nombreOriginalArchivo);
+                documento.setNombreOriginal(archivo.getOriginalFilename());
             }
         }
 
@@ -114,5 +102,40 @@ public class DocumentoService implements iDocumentoService{
         return idocumentoRepository.save(documento);
     }
 
-    
+    /**
+     * Si el archivo es una imagen, la re-codifica como JPG optimizado (reduce peso).
+     * Cualquier otro tipo de archivo se guarda tal cual.
+     */
+    private ArchivoGuardado guardarArchivo(MultipartFile archivo, Path carpeta) throws IOException {
+        boolean esImagen = esImagen(archivo.getContentType());
+        String extension = esImagen ? ".jpg" : obtenerExtension(archivo.getOriginalFilename());
+        String nombreArchivo = UUID.randomUUID() + extension;
+        Path destino = carpeta.resolve(nombreArchivo);
+
+        if (esImagen) {
+            // Limita a 1920px de lado más largo (no agranda imágenes ya pequeñas) y comprime al 80%
+            Thumbnails.of(archivo.getInputStream())
+                    .size(1920, 1920)
+                    .outputFormat("jpg")
+                    .outputQuality(0.8)
+                    .toFile(destino.toFile());
+            return new ArchivoGuardado(nombreArchivo, Files.size(destino), "image/jpeg");
+        }
+
+        Files.copy(archivo.getInputStream(), destino);
+        return new ArchivoGuardado(nombreArchivo, archivo.getSize(), archivo.getContentType());
+    }
+
+    private boolean esImagen(String contentType) {
+        return contentType != null && contentType.startsWith("image/");
+    }
+
+    private String obtenerExtension(String nombreArchivo) {
+        if (nombreArchivo != null && nombreArchivo.contains(".")) {
+            return nombreArchivo.substring(nombreArchivo.lastIndexOf("."));
+        }
+        return "";
+    }
+
+    private record ArchivoGuardado(String nombreArchivo, long tamanoBytes, String contentType) {}
 }

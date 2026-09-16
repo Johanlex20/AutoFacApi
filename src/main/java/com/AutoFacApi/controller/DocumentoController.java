@@ -52,8 +52,15 @@ public class DocumentoController {
         Path archivo = Paths.get(uploadDir).resolve(documento.getNombreArchivo());
         Resource recurso = new UrlResource(archivo.toUri());
 
+        MediaType tipo;
+        try {
+            tipo = MediaType.parseMediaType(documento.getContentType());
+        } catch (Exception e) {
+            tipo = MediaType.APPLICATION_OCTET_STREAM;
+        }
+
         return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentType(tipo)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=\"" + documento.getNombreOriginal() + "\"")
                 .body(recurso);
