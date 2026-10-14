@@ -79,6 +79,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/documento/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/producto/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/perfil/foto/**").permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

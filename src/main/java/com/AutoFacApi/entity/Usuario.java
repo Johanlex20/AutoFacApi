@@ -24,4 +24,9 @@ public class Usuario {
     private String passwordHash;
 
     private String rol;
+
+    // Datos de perfil: opcionales, los edita el propio usuario desde Dashboard > Profile
+    private String nombre;
+    private String telefono;
+    private String fotoUrl;
 }

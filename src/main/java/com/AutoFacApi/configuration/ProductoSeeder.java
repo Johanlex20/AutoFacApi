@@ -10,10 +10,21 @@ import org.springframework.stereotype.Component;
  * Siembra el catalogo inicial de productos con los datos reales de
  * "LISTA DE PRECIOS.docx" (BlueChemical). Solo corre si la tabla esta
  * vacia, para no pisar precios que se hayan actualizado despues.
+ *
+ * Cada presentacion es un producto propio (segun su etiqueta): garrafa de 20 L
+ * y galon de 4 L. Los precios de galon no estan en la lista, quedan en 0 y la
+ * landing muestra "Consultar precio" hasta que se editen desde el dashboard.
  */
 @Component
 public class ProductoSeeder implements CommandLineRunner {
 
+    private static final String GARRAFA = "Garrafa 20 L";
+    private static final String GALON = "Galón 4 L";
+    private static final long SIN_PRECIO = 0L;
+
+    private static final String IMG_DIR = "assets/img/productos/";
+
+    // Sin foto propia todavia (CLEAN BLUE, DESBLUE ORG, SILICON BLUE)
     private static final String ENVASE_20L = "assets/img/envase-20l.jpg";
     private static final String ENVASE_4L = "assets/img/envase-4l.webp";
 
@@ -29,61 +40,63 @@ public class ProductoSeeder implements CommandLineRunner {
             return;
         }
 
-        productoRepository.save(producto("D-20", "Desincrustantes",
-                "Removedor - Desincrustante alcalino, elimina grasa quemada, sellador, sarro y hongo.",
-                "20 L", 150000L, ENVASE_20L));
+        String d20 = "Removedor - Desincrustante alcalino, elimina grasa quemada, sellador, sarro y hongo.";
+        guardar("D-20", "Desincrustantes", d20, GARRAFA, 150000L, IMG_DIR + "d-20.jpg");
+        guardar("D-20", "Desincrustantes", d20, GALON, SIN_PRECIO, IMG_DIR + "d-20-4l.jpg");
 
-        productoRepository.save(producto("DETERBLUE", "Detergentes",
-                "Detergente neutro industrial multiusos para limpieza general, superficies y cristalería.",
-                "20 L", 130000L, ENVASE_20L));
+        String deterblue = "Detergente neutro industrial multiusos para limpieza general, superficies y cristalería.";
+        guardar("DETERBLUE", "Detergentes", deterblue, GARRAFA, 130000L, IMG_DIR + "deterblue.jpg");
+        guardar("DETERBLUE", "Detergentes", deterblue, GALON, SIN_PRECIO, IMG_DIR + "deterblue-4l.jpg");
 
-        productoRepository.save(producto("POWER BLUE", "Desengrasantes",
+        // POWER BLUE: sin foto de galon por ahora
+        guardar("POWER BLUE", "Desengrasantes",
                 "Desengrasante industrial alcalino para superficies altas en grasa.",
-                "20 L", 155000L, ENVASE_20L));
+                GARRAFA, 155000L, IMG_DIR + "power-blue.jpg");
 
-        productoRepository.save(producto("DERMI BLUE", "Higiene de manos",
-                "Jabón de manos antibacterial a base de amonios cuaternarios.",
-                "20 L", 130000L, ENVASE_20L));
+        String dermi = "Jabón de manos antibacterial a base de amonios cuaternarios.";
+        guardar("DERMI BLUE", "Higiene de manos", dermi, GARRAFA, 130000L, IMG_DIR + "dermi-blue.jpg");
+        guardar("DERMI BLUE", "Higiene de manos", dermi, GALON, SIN_PRECIO, IMG_DIR + "dermi-blue-4l.jpg");
 
-        productoRepository.save(producto("BLUE GEL", "Higiene de manos",
-                "Gel antibacterial para manos.",
-                "20 L", 275000L, ENVASE_20L));
+        String gel = "Gel antibacterial para manos.";
+        guardar("BLUEGEL", "Higiene de manos", gel, GARRAFA, 275000L, IMG_DIR + "bluegel.jpg");
+        guardar("BLUEGEL", "Higiene de manos", gel, GALON, SIN_PRECIO, IMG_DIR + "bluegel-4l.jpg");
 
-        productoRepository.save(producto("CLEAN BLUE", "Aseo general",
+        guardar("CLEAN BLUE", "Aseo general",
                 "Limpiador desinfectante para pisos, aroma cítrico, floral, lavanda, pino o talco.",
-                "20 L", 120000L, ENVASE_20L));
+                GARRAFA, 120000L, ENVASE_20L);
 
-        productoRepository.save(producto("BLUE-50", "Aseo general",
-                "Limpiavidrios.",
-                "20 L", 110000L, ENVASE_20L));
+        String bl50 = "Limpiavidrios.";
+        guardar("BL-50", "Aseo general", bl50, GARRAFA, 110000L, IMG_DIR + "bl-50.jpg");
+        guardar("BL-50", "Aseo general", bl50, GALON, SIN_PRECIO, IMG_DIR + "bl-50-4l.jpg");
 
-        productoRepository.save(producto("SILICON BLUE", "Aseo general",
+        guardar("SILICON BLUE", "Aseo general",
                 "Silicona polimérica autobrillante.",
-                "3.75 L", 75000L, ENVASE_4L));
+                "Galón 3.75 L", 75000L, ENVASE_4L);
 
-        productoRepository.save(producto("BLUE-22", "Aseo general",
-                "Ambientador aromatizante.",
-                "20 L", 110000L, ENVASE_20L));
+        String bl22 = "Ambientador aromatizante.";
+        guardar("BL-22", "Aseo general", bl22, GARRAFA, 110000L, IMG_DIR + "bl-22.jpg");
+        guardar("BL-22", "Aseo general", bl22, GALON, SIN_PRECIO, IMG_DIR + "bl-22-4l.jpg");
 
-        productoRepository.save(producto("DESBLUE ORG", "Desinfectantes",
+        guardar("DESBLUE ORG", "Desinfectantes",
                 "Desinfectante para alimentos, superficies y ambientes a base de ácidos orgánicos.",
-                "20 L", 250000L, ENVASE_20L));
+                GARRAFA, 250000L, ENVASE_20L);
 
-        productoRepository.save(producto("DESBLUE CUAT", "Desinfectantes",
-                "Desinfectante para superficies y ambientes a base de amonios cuaternarios.",
-                "20 L", 250000L, ENVASE_20L));
+        String cuat = "Desinfectante para superficies y ambientes a base de amonios cuaternarios.";
+        guardar("DESBLUECUAT", "Desinfectantes", cuat, GARRAFA, 250000L, IMG_DIR + "desbluecuat.jpg");
+        guardar("DESBLUECUAT", "Desinfectantes", cuat, GALON, SIN_PRECIO, IMG_DIR + "desbluecuat-4l.jpg");
 
-        productoRepository.save(producto("ALCOHOL AL 70%", "Desinfectantes",
+        // ALCOHOL 70%: sin foto de galon por ahora
+        guardar("ALCOHOL 70%", "Desinfectantes",
                 "Desinfectante glicerinado.",
-                "20 L", 130000L, ENVASE_20L));
+                GARRAFA, 130000L, IMG_DIR + "alcohol-70.jpg");
 
-        productoRepository.save(producto("BL-40", "Desinfectantes",
-                "Hipoclorito de sodio 5.2% — blanqueador desinfectante.",
-                "20 L", 55000L, ENVASE_20L));
+        String bl40 = "Hipoclorito de sodio 5.2% — blanqueador desinfectante.";
+        guardar("BL-40", "Desinfectantes", bl40, GARRAFA, 55000L, IMG_DIR + "bl-40.jpg");
+        guardar("BL-40", "Desinfectantes", bl40, GALON, SIN_PRECIO, IMG_DIR + "bl-40-4l.jpg");
     }
 
-    private Producto producto(String nombre, String categoria, String descripcion,
-                               String presentacion, Long precio, String imagenUrl) {
+    private void guardar(String nombre, String categoria, String descripcion,
+                         String presentacion, Long precio, String imagenUrl) {
         Producto p = new Producto();
         p.setNombre(nombre);
         p.setCategoria(categoria);
@@ -91,6 +104,6 @@ public class ProductoSeeder implements CommandLineRunner {
         p.setPresentacion(presentacion);
         p.setPrecio(precio);
         p.setImagenUrl(imagenUrl);
-        return p;
+        productoRepository.save(p);
     }
 }
