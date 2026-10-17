@@ -80,6 +80,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/documento/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/producto/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/perfil/foto/**").permitAll()
+                // Solo el ADMIN puede crear, editar o borrar. El usuario DEMO es de solo lectura.
+                .requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
